@@ -41,9 +41,12 @@ The general format of schema properties follows:
 propertyName: {type: <propertyType>, required <boolean>}
 ```
 where:  
- `propertyName` is the key to be expected in the body,  
- `type` is the the expected type of the field under the key  
- `required` specifies whether the body can omit this property or not.
+ * `propertyName` is the key to be expected in the body,  
+ * `type` is the the expected type of the field under the key  
+    * This can be an array of types as well.  
+    * ex: `type: ['string', 'number]`  
+    * the corresponding property of the body can be any of these values.
+ * `required` specifies whether the body can omit this property or not.
 
 ## Testing
 There is a function called `test_schemaChecker` in `./schemaChecker.js`,

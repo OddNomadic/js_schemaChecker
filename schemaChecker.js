@@ -1,6 +1,17 @@
 // This is part of a coding assessment for Aclymate
 // Author: Cameron Handeland
 
+
+// Compares the type of bodyProp to schemaProp
+// if schemaProp is an array of strings describing types,
+// then bodyProp can be any of the types in the array
+function compareTypes(bodyProp, schemaProp){
+    if(Array.isArray(schemaProp)){
+        return schemaProp.includes(typeof(bodyProp))
+    }
+    else return typeof(bodyProp) === schemaProp
+}
+
 // Checks a body property against the schema to verify if it matches
 // Inputs:
 //     bodyProp   - the property being compared
@@ -9,7 +20,7 @@
 //     true if bodyProp matches the schema
 //     false if bodyProp does not match the schema
 function isValidProperty(bodyProp, schemaProp){
-    if(typeof(bodyProp) === schemaProp.type){
+    if(compareTypes(bodyProp, schemaProp.type)){
         if(schemaProp.type === "object"){
             // there are more sub-props to check...
             for(key in schemaProp){
@@ -81,7 +92,7 @@ function schemaChecker(body, schema){
             }
             else{
                 isValidBody = false
-                break;
+                break
             }
         }
         else{
@@ -212,6 +223,34 @@ function test_schemaChecker(){
 
     if(schemaChecker(body,schema)){
         console.log("test5 failed: schema had double-nested object and body did not match its requirements")
+        hasPassed = false
+    }
+    
+    //test6: schema type is an array. body can be any of these types
+    var schema = {
+        test6: {type:['string', 'number'], required: true}
+    }
+    var body = {
+        test6: "hello"
+    }
+    if(!schemaChecker(body, schema)){
+        console.log("test6 failed: schema had an array of possible types and body had one of them (string)")
+        hasPassed = false
+    }
+
+    body = {
+        test6: 3
+    }
+    if(!schemaChecker(body, schema)){
+        console.log("test6 failed: schema had an array of possible types and body had one of them (number)")
+        hasPassed = false
+    }
+
+    body = {
+        test6: {value: "this is the incorrect type"}
+    }
+    if(schemaChecker(body, schema)){
+        console.log("test6 failed: schema had an array of possible types and body had one of them (object)")
         hasPassed = false
     }
 
