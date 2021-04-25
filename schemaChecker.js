@@ -1,6 +1,13 @@
 // This is part of a coding assessment for Aclymate
 // Author: Cameron Handeland
 
+// Checks a body property against the schema to verify if it matches
+// Inputs:
+//     bodyProp   - the property being compared
+//     schemaProp - the corresponding schema property that bodyProp must match
+// returns:
+//     true if bodyProp matches the schema
+//     false if bodyProp does not match the schema
 function isValidProperty(bodyProp, schemaProp){
     if(typeof(bodyProp) === schemaProp.type){
         if(schemaProp.type === "object"){
