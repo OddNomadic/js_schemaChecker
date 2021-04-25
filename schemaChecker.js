@@ -5,7 +5,11 @@
 // Compares the type of bodyProp to schemaProp
 // if schemaProp is an array of strings describing types,
 // then bodyProp can be any of the types in the array
-function compareTypes(bodyProp, schemaProp){
+function isValidType(bodyProp, schemaProp){
+    if(Array.isArray(bodyProp)){
+        // we'll let isValidProperty evaluate each element
+        return true
+    }
     if(Array.isArray(schemaProp)){
         return schemaProp.includes(typeof(bodyProp))
     }
@@ -20,7 +24,15 @@ function compareTypes(bodyProp, schemaProp){
 //     true if bodyProp matches the schema
 //     false if bodyProp does not match the schema
 function isValidProperty(bodyProp, schemaProp){
-    if(compareTypes(bodyProp, schemaProp.type)){
+    if(isValidType(bodyProp, schemaProp.type)){
+        if(Array.isArray(bodyProp)){
+                // check if each element in the array matches supplied type options
+                for(index in  bodyProp){
+                    if(!isValidProperty(bodyProp[index], schemaProp)){
+                        return false
+                    }
+                }
+        }
         if(schemaProp.type === "object"){
             // there are more sub-props to check...
             for(key in schemaProp){
@@ -251,6 +263,34 @@ function test_schemaChecker(){
     }
     if(schemaChecker(body, schema)){
         console.log("test6 failed: schema had an array of possible types and body had one of them (object)")
+        hasPassed = false
+    }
+
+    //test7: nested arrays. no specified element type
+    var schema = {
+        a: {type: "number", required: true}
+    }
+    var body = {
+        a: [1, 2, 3]
+    }
+    if(!schemaChecker(body,schema)){
+        console.log("test7 failed: schema wanted type 'number' and body had an array of numbers")
+        hasPassed = false
+    }
+
+    var body = {
+        a: [1, 2, 3, 'hello']
+    }
+    if(schemaChecker(body,schema)){
+        console.log("test7 failed: schema wanted type 'number' and body had an array of various types")
+        hasPassed = false
+    }
+
+    var schema = {
+        a: {type: ["number", "string"], required: true}
+    }
+    if(!schemaChecker(body,schema)){
+        console.log("test7 failed: schema wanted type 'number' or 'string and body had an array of numbers and strings")
         hasPassed = false
     }
 

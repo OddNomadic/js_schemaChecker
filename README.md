@@ -48,6 +48,20 @@ where:
     * the corresponding property of the body can be any of these values.
  * `required` specifies whether the body can omit this property or not.
 
+The body properties can be arrays as well. Currently, each element of the array will be compared to the acceptable
+types for the given property name in the schema.  
+
+For example:
+```
+    var schema = {
+        a: {type: ["number", "string"], required: true}
+    }
+        var body = {
+        a: [1, 2, 3, 'hello']
+    }
+    checkSchema(body, schema) //returns true
+```
+
 ## Testing
 There is a function called `test_schemaChecker` in `./schemaChecker.js`,
 
